@@ -53,7 +53,7 @@ describe 'Inquisitor', ->
         .reply 200, [{}, {statusDevice: 'status-device'}]
 
 
-    beforeEach 'subscriptions', (done) ->
+    beforeEach 'subscriptions', ->
       @device1Subscription = @meshblu
         .post '/v2/devices/inquisitor-uuid/subscriptions/device-1/configure.received'
         .set 'Authorization', "Basic #{@userAuth}"
@@ -69,6 +69,33 @@ describe 'Inquisitor', ->
         .set 'Authorization', "Basic #{@userAuth}"
         .reply 201
 
+    beforeEach 'permissions', ->
+      @meshblu
+        .post '/search/devices'
+        .set 'Authorization', "Basic #{@userAuth}"
+        .set 'x-meshblu-projection', JSON.stringify({uuid: true})
+        .send 'meshblu.version': '2.0.0', uuid: $in: ['device-1', 'device-2', 'status-device']
+        .reply 200, [{uuid: 'status-device'}, {uuid: 'device-1'}]
+
+      @updateDevice1 = @meshblu
+        .put '/v2/devices/device-1'
+        .set 'Authorization', "Basic #{@userAuth}"
+        .send $addToSet: { 'meshblu.whitelists.configure.received': {uuid: 'inquisitor-uuid'} }
+        .reply 204
+
+      @updateDevice2 = @meshblu
+        .put '/v2/devices/device-2'
+        .set 'Authorization', "Basic #{@userAuth}"
+        .send $addToSet: { 'configureWhitelist': 'inquisitor-uuid'}
+        .reply 204
+
+      @updateStatusDevice = @meshblu
+        .put '/v2/devices/status-device'
+        .set 'Authorization', "Basic #{@userAuth}"
+        .send $addToSet: { 'meshblu.whitelists.configure.received': {uuid: 'inquisitor-uuid'} }
+        .reply 204
+
+    beforeEach (done) ->
       @sut.setup done
 
     it 'should create the configure.received subscription for device-1', ->
@@ -79,3 +106,12 @@ describe 'Inquisitor', ->
 
     it 'should create the configure.received subscription for the status-device', ->
       @statusDeviceSubscription.done()
+
+    it 'should update the whitelist for device-1', ->
+      @updateDevice1.done()
+
+    it 'should update the whitelist for device-2', ->
+      @updateDevice2.done()
+
+    it 'should update the whitelist for the status-device', ->
+      @updateStatusDevice.done()

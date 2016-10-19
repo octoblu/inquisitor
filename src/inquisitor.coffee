@@ -20,7 +20,9 @@ class Inquisitor
 
          @createSubscriptions allDevices, (error) =>
            return callback error if error?
-           callback()
+           @updatePermissions allDevices, (error) =>
+             return callback error
+             callback()
 
   getStatusDevices: (devices, callback) =>
     @meshblu.search { uuid: $in: devices }, { projection: statusDevice: true }, (error, newDevices) =>
@@ -31,5 +33,28 @@ class Inquisitor
   createSubscriptions: (devices, callback) =>
     subscriptions = _.map devices, (device) => subscriberUuid: @inquisitorUuid, emitterUuid: device, type: 'configure.received'
     async.each subscriptions, @meshblu.createSubscription, callback
+
+  updatePermissions: (devices, callback) =>
+    @meshblu.search {uuid: {$in: devices}, 'meshblu.version': '2.0.0'}, {projection: uuid: true }, (error, v2Devices) =>
+      return callback error if error?
+      v2Devices = _.map v2Devices, 'uuid'
+      v1Devices = _.difference devices, v2Devices
+      @updateV1Devices v1Devices, (error) =>
+        return callback error if error?
+        @updateV2Devices v2Devices, callback
+
+  updateV1Devices: (devices, callback) =>
+    async.each devices, @_updateV1Device, callback
+
+  _updateV1Device: (device, callback) =>
+    @meshblu.updateDangerously device, $addToSet: configureWhitelist: @inquisitorUuid, callback
+
+  updateV2Devices: (devices, callback) =>
+    async.each devices, @_updateV2Device, callback
+
+  _updateV2Device: (device, callback) =>
+    @meshblu.updateDangerously device, $addToSet: 'meshblu.whitelists.configure.received': uuid: @inquisitorUuid, callback
+
+
 
 module.exports = Inquisitor
