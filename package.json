@@ -1,6 +1,6 @@
 {
   "name": "inquisitor",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A library to setup an inquisitor device",
   "main": "index.js",
   "directories": {

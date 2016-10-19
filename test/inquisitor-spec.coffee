@@ -69,6 +69,11 @@ describe 'Inquisitor', ->
         .set 'Authorization', "Basic #{@userAuth}"
         .reply 201
 
+      @subscribeToInquisitor = @meshblu
+        .post '/v2/devices/inquisitor-uuid/subscriptions/inquisitor-uuid/configure.received'
+        .set 'Authorization', "Basic #{@userAuth}"
+        .reply 201
+
     beforeEach 'permissions', ->
       @meshblu
         .post '/search/devices'
@@ -97,6 +102,9 @@ describe 'Inquisitor', ->
 
     beforeEach (done) ->
       @sut.setup done
+
+    it 'should create the configure.received subscription for inquisitor-uuid', ->
+      @subscribeToInquisitor.done()
 
     it 'should create the configure.received subscription for device-1', ->
       @device1Subscription.done()

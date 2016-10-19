@@ -14,15 +14,18 @@ class Inquisitor
 
       devices = device.options.devices
 
-      @getStatusDevices devices, (error, statusDevices) =>
-         return callback error if error?
-         allDevices = _.union devices, statusDevices
-
-         @createSubscriptions allDevices, (error) =>
+      @_createSubscription @inquisitorUuid, (error) =>
+        return callback error if error?
+        
+        @getStatusDevices devices, (error, statusDevices) =>
            return callback error if error?
-           @updatePermissions allDevices, (error) =>
-             return callback error
-             callback()
+           allDevices = _.union devices, statusDevices
+
+           @createSubscriptions allDevices, (error) =>
+             return callback error if error?
+             @updatePermissions allDevices, (error) =>
+               return callback error
+               callback()
 
   getStatusDevices: (devices, callback) =>
     @meshblu.search { uuid: $in: devices }, { projection: statusDevice: true }, (error, newDevices) =>
@@ -31,8 +34,11 @@ class Inquisitor
       callback null, statusDevices
 
   createSubscriptions: (devices, callback) =>
-    subscriptions = _.map devices, (device) => subscriberUuid: @inquisitorUuid, emitterUuid: device, type: 'configure.received'
-    async.each subscriptions, @meshblu.createSubscription, callback
+    async.each devices, @_createSubscription, callback
+
+  _createSubscription: (device, callback) =>
+    subscription = subscriberUuid: @inquisitorUuid, emitterUuid: device, type: 'configure.received'
+    @meshblu.createSubscription subscription, callback
 
   updatePermissions: (devices, callback) =>
     @meshblu.search {uuid: {$in: devices}, 'meshblu.version': '2.0.0'}, {projection: uuid: true }, (error, v2Devices) =>
