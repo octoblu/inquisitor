@@ -47,13 +47,22 @@ class Inquisitor
     async.each devices, @_updateV1Device, callback
 
   _updateV1Device: (device, callback) =>
-    @meshblu.updateDangerously device, $addToSet: configureWhitelist: @inquisitorUuid, callback
+    update =
+      $addToSet:
+        configureWhitelist: @inquisitorUuid
+        discoverWhitelist: @inquisitorUuid
+    @meshblu.updateDangerously device, update, callback
 
   updateV2Devices: (devices, callback) =>
     async.each devices, @_updateV2Device, callback
 
   _updateV2Device: (device, callback) =>
-    @meshblu.updateDangerously device, $addToSet: 'meshblu.whitelists.configure.received': uuid: @inquisitorUuid, callback
+    update =
+      $addToSet:
+        'meshblu.whitelists.configure.received': uuid: @inquisitorUuid
+        'meshblu.whitelists.discover.view': uuid: @inquisitorUuid
+
+    @meshblu.updateDangerously device, update, callback
 
 
 

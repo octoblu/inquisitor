@@ -80,19 +80,19 @@ describe 'Inquisitor', ->
       @updateDevice1 = @meshblu
         .put '/v2/devices/device-1'
         .set 'Authorization', "Basic #{@userAuth}"
-        .send $addToSet: { 'meshblu.whitelists.configure.received': {uuid: 'inquisitor-uuid'} }
+        .send $addToSet: { 'meshblu.whitelists.configure.received': {uuid: 'inquisitor-uuid'}, 'meshblu.whitelists.discover.view': {uuid: 'inquisitor-uuid'} }
         .reply 204
 
       @updateDevice2 = @meshblu
         .put '/v2/devices/device-2'
         .set 'Authorization', "Basic #{@userAuth}"
-        .send $addToSet: { 'configureWhitelist': 'inquisitor-uuid'}
+        .send $addToSet: { 'configureWhitelist': 'inquisitor-uuid', 'discoverWhitelist': 'inquisitor-uuid'}
         .reply 204
 
       @updateStatusDevice = @meshblu
         .put '/v2/devices/status-device'
         .set 'Authorization', "Basic #{@userAuth}"
-        .send $addToSet: { 'meshblu.whitelists.configure.received': {uuid: 'inquisitor-uuid'} }
+        .send $addToSet: { 'meshblu.whitelists.configure.received': {uuid: 'inquisitor-uuid'}, 'meshblu.whitelists.discover.view': {uuid: 'inquisitor-uuid'} }
         .reply 204
 
     beforeEach (done) ->
