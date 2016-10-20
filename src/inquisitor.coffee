@@ -16,16 +16,14 @@ class Inquisitor
 
       @_createSubscription @inquisitorUuid, (error) =>
         return callback error if error?
-        
+
         @getStatusDevices devices, (error, statusDevices) =>
            return callback error if error?
            allDevices = _.union devices, statusDevices
 
            @createSubscriptions allDevices, (error) =>
              return callback error if error?
-             @updatePermissions allDevices, (error) =>
-               return callback error
-               callback()
+             @updatePermissions allDevices, callback
 
   getStatusDevices: (devices, callback) =>
     @meshblu.search { uuid: $in: devices }, { projection: statusDevice: true }, (error, newDevices) =>
@@ -69,7 +67,5 @@ class Inquisitor
         'meshblu.whitelists.discover.view': uuid: @inquisitorUuid
 
     @meshblu.updateDangerously device, update, callback
-
-
 
 module.exports = Inquisitor
