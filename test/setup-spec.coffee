@@ -10,7 +10,7 @@ SocketIO      = require 'socket.io'
 
 Inquisitor    = require '..'
 
-describe 'Inquisitor', ->
+describe 'Setup', ->
   beforeEach ->
 
     meshbluConfig =

@@ -31,6 +31,22 @@ class Inquisitor
       statusDevices = _.compact _.map newDevices, 'statusDevice'
       callback null, statusDevices
 
+  getMonitoredDevices: (callback) =>
+    @meshblu.listSubscriptions {subscriberUuid: @inquisitorUuid}, (error, subscriptions) =>
+      return callback error if error?
+      subscribedDevices = _.without _.map(subscriptions, 'emitterUuid'), @inquisitorUuid
+      @meshblu.search {query: {uuid: $in: subscribedDevices}}, (error, devices) =>
+        return callback error if error?
+        callback null, @mapStatusDevices devices
+
+  mapStatusDevices: (devices) =>
+    _.compact _.map devices, (device) =>
+      return if _.some devices, statusDevice: device.uuid
+      return {device, errors: device.errors} unless device.statusDevice?
+      statusDevice = _.find devices, uuid: device.statusDevice
+      return {device, errors: statusDevice.errors}
+
+
   createSubscriptions: (devices, callback) =>
     async.each devices, @_createSubscription, callback
 
