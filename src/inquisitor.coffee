@@ -1,6 +1,6 @@
 _           = require 'lodash'
 async       = require 'async'
-MeshbluHttp = require 'meshblu-http'
+MeshbluHttp = require 'browser-meshblu-http'
 
 
 class Inquisitor
@@ -26,7 +26,7 @@ class Inquisitor
              @updatePermissions allDevices, callback
 
   getStatusDevices: (devices, callback) =>
-    @meshblu.search { uuid: $in: devices }, { projection: statusDevice: true }, (error, newDevices) =>
+    @meshblu.search {query: {uuid: $in: devices }, projection: {statusDevice: true }}, (error, newDevices) =>
       return callback error if error?
       statusDevices = _.compact _.map newDevices, 'statusDevice'
       callback null, statusDevices
@@ -39,7 +39,7 @@ class Inquisitor
     @meshblu.createSubscription subscription, callback
 
   updatePermissions: (devices, callback) =>
-    @meshblu.search {uuid: {$in: devices}, 'meshblu.version': '2.0.0'}, {projection: uuid: true }, (error, v2Devices) =>
+    @meshblu.search {query: {uuid: {$in: devices}, 'meshblu.version': '2.0.0'}, projection: {uuid: true}}, (error, v2Devices) =>
       return callback error if error?
       v2Devices = _.map v2Devices, 'uuid'
       v1Devices = _.difference devices, v2Devices

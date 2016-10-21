@@ -42,7 +42,5 @@ class Command
     #{parser.help({includeEnv: true})}
     """
 
-
-
 command = new Command(process.argv)
 command.run()
