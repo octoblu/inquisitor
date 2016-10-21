@@ -102,6 +102,7 @@ describe 'Setup', ->
 
     beforeEach (done) ->
       @sut.setup done
+      return null
 
     it 'should create the configure.received subscription for inquisitor-uuid', ->
       @subscribeToInquisitor.done()

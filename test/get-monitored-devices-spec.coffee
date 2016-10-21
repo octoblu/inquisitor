@@ -60,6 +60,7 @@ describe 'getMonitoredDevices', ->
 
     beforeEach (done) ->
       @sut.getMonitoredDevices (error, @devicesAndErrors) => done()
+      return null
 
     it 'should return an array of objects containing errors associated with devices', ->
       expected = [
