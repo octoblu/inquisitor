@@ -1,16 +1,21 @@
 {
   "name": "meshblu-inquisitor",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "description": "A library to setup an inquisitor device",
   "main": "index.js",
   "directories": {
     "test": "test"
   },
+  "browser": {
+    "./index.js": "./dist/bundle.js"
+  },
   "scripts": {
     "test": "mocha",
     "coverage": "nyc npm test",
     "mocha:json": "mocha --reporter json > coverage/mocha.json",
-    "test:watch": "mocha -w -R mocha-multi --reporter-options spec=-,mocha-osx-reporter=-"
+    "test:watch": "mocha -w -R mocha-multi --reporter-options spec=-,mocha-osx-reporter=-",
+    "build": "webpack --config webpack.config.lib.js",
+    "bundle": "webpack --config webpack.config.global.js -p"
   },
   "repository": {
     "type": "git",
@@ -25,7 +30,9 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "chai-subset": "^1.3.0",
+    "coffee-loader": "^0.7.2",
     "coffee-script": "^1.11.1",
+    "compression-webpack-plugin": "^0.3.2",
     "env-test": "^1.0.0",
     "mocha": "^3.1.2",
     "mocha-multi": "^0.9.1",
@@ -35,7 +42,8 @@
     "shmock": "^0.8.1",
     "sinon": "^1.17.6",
     "sinon-chai": "^2.8.0",
-    "socket.io": "^1.5.0"
+    "socket.io": "^1.5.0",
+    "webpack": "^1.13.2"
   },
   "nyc": {
     "cache": true,

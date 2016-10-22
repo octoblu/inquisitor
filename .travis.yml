@@ -8,6 +8,12 @@ after_success:
 - npm run coverage
 - bash <(curl -s https://codecov.io/bash)
 - bash <(curl -s https://codecov.octoblu.com/bash)
+before_deploy:
+- npm run-script build
+- npm run-script bundle
+- mkdir -p deploy/inquisitor/$TRAVIS_TAG
+- cp deploy/inquisitor/latest/inquisitor.bundle.js deploy/inquisitor/$TRAVIS_TAG/inquisitor.bundle.js
+
 deploy:
   provider: npm
   email: serveradmin@octoblu.com
