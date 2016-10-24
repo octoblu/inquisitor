@@ -42,9 +42,9 @@ class Inquisitor
   mapStatusDevices: (devices) =>
     _.compact _.map devices, (device) =>
       return if _.some devices, statusDevice: device.uuid
-      return {device, errors: device.errors} unless device.statusDevice?
+      return {device, statusDevice: device.uuid, errors: device.errors} unless device.statusDevice?
       statusDevice = _.find devices, uuid: device.statusDevice
-      return {device, errors: statusDevice.errors}
+      return {device, statusDevice: statusDevice.uuid, errors: statusDevice.errors}
 
 
   createSubscriptions: (devices, callback) =>
@@ -83,5 +83,11 @@ class Inquisitor
         'meshblu.whitelists.discover.view': uuid: @inquisitorUuid
 
     @meshblu.updateDangerously device, update, callback
+
+  clearErrors: (uuid, callback) =>
+    update =
+      $unset:
+        errors: true
+    @meshblu.updateDangerously uuid, update, callback
 
 module.exports = Inquisitor

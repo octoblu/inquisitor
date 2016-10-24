@@ -66,10 +66,12 @@ describe 'getMonitoredDevices', ->
       expected = [
         {
           device: { uuid: 'device-1', statusDevice: 'status-device' }
+          statusDevice: 'status-device'
           errors: ['look-an-error']
         }
         {
           device: { uuid: 'device-2', errors: ['yet-another-error'] }
+          statusDevice: 'device-2'
           errors: ['yet-another-error']
         }
       ]
