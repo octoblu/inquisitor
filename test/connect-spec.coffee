@@ -59,9 +59,11 @@ describe 'connect', ->
         done()
 
       @sut.connect =>
+      return null
 
     afterEach (done) ->
       @sut.stop done
+      return null
 
     it 'should connect', ->
       expect(@socket).to.exist
