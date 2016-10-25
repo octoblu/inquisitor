@@ -1,10 +1,10 @@
 _           = require 'lodash'
 async       = require 'async'
 MeshbluHttp = require 'browser-meshblu-http'
-
+MeshbluHose = require 'meshblu-firehose-socket.io'
 
 class Inquisitor
-  constructor: ({meshbluConfig, uuid}) ->
+  constructor: ({meshbluConfig, @firehoseConfig, uuid}) ->
     @meshblu = new MeshbluHttp meshbluConfig
     @inquisitorUuid = uuid
 
@@ -24,6 +24,24 @@ class Inquisitor
            @createSubscriptions allDevices, (error) =>
              return callback error if error?
              @updatePermissions allDevices, callback
+
+  connect: (callback) =>
+    @meshblu.generateAndStoreToken @inquisitorUuid, {}, (error, response) =>
+      return callback error if error?
+      @firehose = new MeshbluHose({
+        meshbluConfig: {
+         hostname: @firehoseConfig.hostname
+         port: @firehoseConfig.port,
+         protocol: @firehoseConfig.protocol
+         uuid: @inquisitorUuid,
+         token: response.token
+        }
+      })
+      @firehose.connect {uuid: @inquisitorUuid}, callback
+
+  stop: (callback) =>
+    return callback() unless @firehose?
+    @firehose.close callback
 
   getStatusDevices: (devices, callback) =>
     @meshblu.search {query: {uuid: $in: devices }, projection: {statusDevice: true }}, (error, newDevices) =>

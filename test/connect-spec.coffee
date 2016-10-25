@@ -1,0 +1,74 @@
+{afterEach, beforeEach, describe, it} = global
+{expect}      = require 'chai'
+sinon         = require 'sinon'
+URL           = require 'url'
+_             = require 'lodash'
+enableDestroy = require 'server-destroy'
+shmock        = require 'shmock'
+SocketIO      = require 'socket.io'
+Inquisitor    = require '..'
+
+describe 'connect', ->
+  beforeEach 'meshblu', ->
+    @meshblu = shmock 0xd00d
+    enableDestroy(@meshblu)
+
+  afterEach (done) ->
+    @meshblu.destroy done
+
+  beforeEach 'setup socket.io', ->
+    @firehoseServer = new SocketIO 0xcaf1
+
+  afterEach ->
+    @firehoseServer.close()
+
+  beforeEach ->
+    meshbluConfig =
+      uuid: 'user-uuid'
+      token: 'user-token'
+      hostname: 'localhost'
+      port: 0xd00d
+      protocol: 'http'
+
+    firehoseConfig =
+      hostname: 'localhost'
+      port: 0xcaf1
+      protocol: 'http'
+
+    uuid = 'inquisitor-uuid'
+
+    @userAuth = new Buffer('user-uuid:user-token').toString 'base64'
+    @sut = new Inquisitor {meshbluConfig, firehoseConfig, uuid}
+
+  it 'should exist', ->
+    expect(@sut).to.exist
+
+  describe '->connect', ->
+    beforeEach ->
+      @meshblu
+        .post '/devices/inquisitor-uuid/tokens'
+        .set 'Authorization', "Basic #{@userAuth}"
+        .reply 201, uuid: "inquisitor-uuid", token: "inquisitor-token"
+
+    beforeEach (done) ->
+      @firehoseServer.on 'connection', (@socket) =>
+
+        {@pathname, @query} = URL.parse @socket.client.request.url, true
+        @uuid = @socket.client.request.headers['x-meshblu-uuid']
+        @token = @socket.client.request.headers['x-meshblu-token']
+        done()
+
+      @sut.connect =>
+
+    afterEach (done) ->
+      @sut.stop done
+
+    it 'should connect', ->
+      expect(@socket).to.exist
+      expect(@pathname).to.equal '/socket.io/v1/inquisitor-uuid/'
+
+    it 'should pass along the auth info', ->
+      expect(@uuid).to.equal 'inquisitor-uuid'
+      expect(@token).to.equal 'inquisitor-token'
+      expect(@query.uuid).to.equal 'inquisitor-uuid'
+      expect(@query.token).to.equal 'inquisitor-token'
