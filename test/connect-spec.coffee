@@ -104,6 +104,11 @@ describe 'connect', ->
                 to: "inquisitor-uuid"
                 type: "configure.received"
               }
+              {
+                from: "inquisitor-uuid"
+                to: "inquisitor-uuid"
+                type: "configure.received"
+              }
             ]
           rawData: JSON.stringify(
             uuid: "device-2"
@@ -139,6 +144,11 @@ describe 'connect', ->
             route: [
               {
                 from: "status-device"
+                to: "inquisitor-uuid"
+                type: "configure.received"
+              }
+              {
+                from: "inquisitor-uuid"
                 to: "inquisitor-uuid"
                 type: "configure.received"
               }
