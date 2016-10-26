@@ -1,7 +1,7 @@
 _           = require 'lodash'
 async       = require 'async'
 MeshbluHttp = require 'browser-meshblu-http'
-MeshbluHose = require 'meshblu-firehose-socket.io'
+MeshbluHose = require 'meshblu-firehose-socket.io/src/firehose-socket-io.coffee'
 
 class Inquisitor
   constructor: ({meshbluConfig, @firehoseConfig, uuid}) ->

@@ -13,7 +13,7 @@ module.exports = {
   module: {
     loaders: [
       {
-        test: /\.coffee$/, loader: 'coffee', include: /src/
+        test: /\.coffee$/, loader: 'coffee-loader', include: [/src/, /node_modules/]
       }
     ]
   },
