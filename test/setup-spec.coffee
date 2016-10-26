@@ -42,8 +42,7 @@ describe 'Setup', ->
         .set 'Authorization', "Basic #{@userAuth}"
         .reply 200,
           uuid: 'inquisitor-uuid'
-          options:
-            devices: ['device-1', 'device-2']
+          devices: ['device-1', 'device-2']
 
       @meshblu
         .post '/search/devices'

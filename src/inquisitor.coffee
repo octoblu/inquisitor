@@ -13,7 +13,7 @@ class Inquisitor extends EventEmitter
     @meshblu.device @inquisitorUuid, (error, device) =>
       return callback error if error?
 
-      devices = device.options.devices
+      devices = device.devices
 
       @_createSubscription @inquisitorUuid, (error) =>
         return callback error if error?
