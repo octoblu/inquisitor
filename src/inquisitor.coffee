@@ -47,7 +47,6 @@ class Inquisitor extends EventEmitter
         @firehose.connect {uuid: @inquisitorUuid}, callback
 
   _onMessage: ({metadata, data}) =>
-    console.log _.initial(metadata.route)
     statusDevice =  _.last(_.initial(metadata.route)).from
     {device} = _.find @monitoredDevices, {statusDevice}
     device = data if device.uuid == statusDevice
