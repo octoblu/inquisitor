@@ -19,8 +19,11 @@ describe 'connect', ->
   beforeEach 'setup socket.io', ->
     @firehoseServer = new SocketIO 0xcaf1
 
-  afterEach ->
-    @firehoseServer.close()
+  afterEach 'close socket.io', (done) ->
+    _.delay =>
+      @firehoseServer.close()
+      done()
+    , 50
 
   beforeEach ->
     meshbluConfig =
@@ -50,6 +53,21 @@ describe 'connect', ->
         .set 'Authorization', "Basic #{@userAuth}"
         .reply 201, uuid: "inquisitor-uuid", token: "inquisitor-token"
 
+    beforeEach 'mock getMonitoredDevices, out of laziness', ->
+      @deviceMap = [
+        {
+          device: { uuid: 'device-1', statusDevice: 'status-device', otherProperty: false }
+          statusDevice: 'status-device'
+          errors: ['look-an-error']
+        }
+        {
+          device: { uuid: 'device-2', errors: ['yet-another-error'] }
+          statusDevice: 'device-2'
+          errors: ['yet-another-error']
+        }
+      ]
+      @sut.getMonitoredDevices = sinon.stub().yields null, @deviceMap
+
     beforeEach (done) ->
       @firehoseServer.on 'connection', (@socket) =>
 
@@ -74,3 +92,76 @@ describe 'connect', ->
       expect(@token).to.equal 'inquisitor-token'
       expect(@query.uuid).to.equal 'inquisitor-uuid'
       expect(@query.token).to.equal 'inquisitor-token'
+
+    describe 'when we get a config update from the firehose', ->
+      beforeEach (done) ->
+        @sut.on 'message', (@message) => done()
+        changeEvent =
+          metadata:
+            route: [
+              {
+                from: "device-2"
+                to: "inquisitor-uuid"
+                type: "configure.received"
+              }
+            ]
+          rawData: JSON.stringify(
+            uuid: "device-2"
+            errors: [
+              message: '#blazeit'
+              code: 420
+            ]
+          )
+        @socket.emit 'message', changeEvent
+
+      it 'should emit a message in the right format', ->
+        expectedMessage =
+          statusDevice: 'device-2'
+          errors: [
+            message: '#blazeit'
+            code: 420
+          ]
+          device:
+            uuid: "device-2"
+            errors: [
+              message: '#blazeit'
+              code: 420
+            ]
+        expect(@message).to.deep.equal expectedMessage
+
+
+    describe 'when we get a config update from the firehose from a status-device', ->
+      beforeEach (done) ->
+        @sut.on 'message', (@message) => done()
+
+        changeEvent =
+          metadata:
+            route: [
+              {
+                from: "status-device"
+                to: "inquisitor-uuid"
+                type: "configure.received"
+              }
+            ]
+          rawData: JSON.stringify(
+            uuid: "status-device"
+            errors: [
+              message: '#blazeit'
+              code: 420
+            ]
+          )
+        @socket.emit 'message', changeEvent
+
+      it 'should emit a message in the right format', ->
+        expectedMessage =
+          statusDevice: 'status-device'
+          errors: [
+            message: '#blazeit'
+            code: 420
+          ]
+          device:
+            uuid: 'device-1'
+            statusDevice: 'status-device'
+            otherProperty: false
+
+        expect(@message).to.deep.equal expectedMessage

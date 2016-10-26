@@ -2,8 +2,9 @@ _           = require 'lodash'
 async       = require 'async'
 MeshbluHttp = require 'browser-meshblu-http'
 MeshbluHose = require 'meshblu-firehose-socket.io/src/firehose-socket-io.coffee'
+EventEmitter = require 'eventemitter2'
 
-class Inquisitor
+class Inquisitor extends EventEmitter
   constructor: ({meshbluConfig, @firehoseConfig, uuid}) ->
     @meshblu = new MeshbluHttp meshbluConfig
     @inquisitorUuid = uuid
@@ -26,18 +27,37 @@ class Inquisitor
              @updatePermissions allDevices, callback
 
   connect: (callback) =>
-    @meshblu.generateAndStoreToken @inquisitorUuid, {}, (error, response) =>
+    @getMonitoredDevices (error, @monitoredDevices) =>
       return callback error if error?
-      @firehose = new MeshbluHose({
-        meshbluConfig: {
-         hostname: @firehoseConfig.hostname
-         port: @firehoseConfig.port,
-         protocol: @firehoseConfig.protocol
-         uuid: @inquisitorUuid,
-         token: response.token
-        }
-      })
-      @firehose.connect {uuid: @inquisitorUuid}, callback
+      @meshblu.generateAndStoreToken @inquisitorUuid, {}, (error, response) =>
+        return callback error if error?
+        @firehose = new MeshbluHose({
+          meshbluConfig: {
+           hostname: @firehoseConfig.hostname
+           port: @firehoseConfig.port,
+           protocol: @firehoseConfig.protocol
+           uuid: @inquisitorUuid,
+           token: response.token
+          }
+        })
+
+        @firehose.on 'message', @_onMessage
+
+
+        @firehose.connect {uuid: @inquisitorUuid}, callback
+
+  _onMessage: ({metadata, data}) =>
+    statusDevice =  _.last(metadata.route).from
+    {device} = _.find @monitoredDevices, {statusDevice}
+    device = data if device.uuid == statusDevice
+
+    emitMessage =
+      statusDevice: statusDevice
+      errors: data.errors
+      device: device
+
+    @emit 'message', emitMessage
+
 
   stop: (callback) =>
     return callback() unless @firehose?
