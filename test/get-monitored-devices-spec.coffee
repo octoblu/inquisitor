@@ -65,11 +65,13 @@ describe 'getMonitoredDevices', ->
     it 'should return an array of objects containing errors associated with devices', ->
       expected = [
         {
+          uuid: 'device-1'
           device: { uuid: 'device-1', statusDevice: 'status-device' }
           statusDevice: 'status-device'
           errors: ['look-an-error']
         }
         {
+          uuid: 'device-2'
           device: { uuid: 'device-2', errors: ['yet-another-error'] }
           statusDevice: 'device-2'
           errors: ['yet-another-error']
