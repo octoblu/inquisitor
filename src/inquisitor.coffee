@@ -129,4 +129,18 @@ class Inquisitor extends EventEmitter
         errors: true
     @meshblu.updateDangerously uuid, update, callback
 
+  getMonitoredDeviceSubscriptions: (callback) =>
+    @meshblu.listSubscriptions {subscriberUuid: @inquisitorUuid}, (error, subscriptions) =>
+      return callback error if error?
+      subscriptionQueries =
+        _(subscriptions)
+          .uniqBy('emitterUuid')
+          .reject emitterUuid: @inquisitorUuid
+          .map ({emitterUuid}) => {subscriberUuid: emitterUuid}
+          .compact()
+          .value()
+
+      async.map subscriptionQueries, @meshblu.listSubscriptions, (error, subscriptions) =>
+        return callback error, _.flatten(subscriptions)
+
 module.exports = Inquisitor
