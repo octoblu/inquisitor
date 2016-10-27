@@ -52,6 +52,7 @@ class Inquisitor extends EventEmitter
     device = data if device.uuid == statusDevice
 
     emitMessage =
+      uuid: device.uuid
       statusDevice: statusDevice
       errors: data.errors
       device: device

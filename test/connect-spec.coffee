@@ -113,24 +113,25 @@ describe 'connect', ->
           rawData: JSON.stringify(
             uuid: "device-2"
             errors: [
-              message: '#blazeit'
-              code: 420
+              message: '#watchit'
+              code: 101
             ]
           )
         @socket.emit 'message', changeEvent
 
       it 'should emit a message in the right format', ->
         expectedMessage =
+          uuid: 'device-2'
           statusDevice: 'device-2'
           errors: [
-            message: '#blazeit'
-            code: 420
+            message: '#watchit'
+            code: 101
           ]
           device:
             uuid: "device-2"
             errors: [
-              message: '#blazeit'
-              code: 420
+              message: '#watchit'
+              code: 101
             ]
         expect(@message).to.deep.equal expectedMessage
 
@@ -156,8 +157,8 @@ describe 'connect', ->
           rawData: JSON.stringify(
             uuid: "status-device"
             errors: [
-              message: '#blazeit'
-              code: 420
+              message: '#watchit'
+              code: 101
             ]
           )
         @socket.emit 'message', changeEvent
@@ -165,9 +166,10 @@ describe 'connect', ->
       it 'should emit a message in the right format', ->
         expectedMessage =
           statusDevice: 'status-device'
+          uuid: 'device-1'
           errors: [
-            message: '#blazeit'
-            code: 420
+            message: '#watchit'
+            code: 101
           ]
           device:
             uuid: 'device-1'
