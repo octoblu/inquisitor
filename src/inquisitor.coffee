@@ -48,6 +48,7 @@ class Inquisitor extends EventEmitter
 
   _onMessage: ({metadata, data}) =>
     @emit 'message', {metadata, data}
+    return unless _.last(metadata.route).type == 'configure.received'
 
     statusDevice  =  _.last(_.initial(metadata.route)).from
     {device}      = _.find @monitoredDevices, {statusDevice}
