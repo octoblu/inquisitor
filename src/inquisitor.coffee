@@ -47,9 +47,11 @@ class Inquisitor extends EventEmitter
         @firehose.connect {uuid: @inquisitorUuid}, callback
 
   _onMessage: ({metadata, data}) =>
-    statusDevice =  _.last(_.initial(metadata.route)).from
-    {device} = _.find @monitoredDevices, {statusDevice}
-    device = data if device.uuid == statusDevice
+    @emit 'message', {metadata, data}
+
+    statusDevice  =  _.last(_.initial(metadata.route)).from
+    {device}      = _.find @monitoredDevices, {statusDevice}
+    device        = data if device.uuid == statusDevice
 
     emitMessage =
       uuid: device.uuid
@@ -57,7 +59,7 @@ class Inquisitor extends EventEmitter
       errors: data.errors
       device: device
 
-    @emit 'message', emitMessage
+    @emit 'status-update', emitMessage
 
 
   stop: (callback) =>

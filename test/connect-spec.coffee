@@ -95,7 +95,7 @@ describe 'connect', ->
 
     describe 'when we get a config update from the firehose', ->
       beforeEach (done) ->
-        @sut.on 'message', (@message) => done()
+        @sut.on 'status-update', (@message) => done()
         changeEvent =
           metadata:
             route: [
@@ -138,7 +138,7 @@ describe 'connect', ->
 
     describe 'when we get a config update from the firehose from a status-device', ->
       beforeEach (done) ->
-        @sut.on 'message', (@message) => done()
+        @sut.on 'status-update', (@message) => done()
 
         changeEvent =
           metadata:
