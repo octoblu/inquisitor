@@ -86,7 +86,7 @@ class Inquisitor extends EventEmitter
       return if _.some devices, statusDevice: device.uuid
       return {uuid: device.uuid, device, statusDevice: device.uuid, errors: device.errors} unless device.statusDevice?
       statusDevice = _.find devices, uuid: device.statusDevice
-      return {uuid: device.uuid, device, statusDevice: statusDevice.uuid, errors: statusDevice.errors}
+      return {uuid: device.uuid, device, statusDevice: device.statusDevice, errors: statusDevice?.errors || []}
 
 
   createSubscriptions: (devices, callback) =>
