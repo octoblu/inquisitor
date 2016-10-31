@@ -53,25 +53,102 @@ describe 'Setup', ->
 
 
     beforeEach 'subscriptions', ->
-      @device1Subscription = @meshblu
+      @subscriptionRequests = []
+      @subscriptionRequests.push( @meshblu
         .post '/v2/devices/inquisitor-uuid/subscriptions/device-1/configure.received'
         .set 'Authorization', "Basic #{@userAuth}"
         .reply 201
+      )
 
-      @device2Subscription = @meshblu
+      @subscriptionRequests.push( @meshblu
+        .post '/v2/devices/inquisitor-uuid/subscriptions/device-1/message.received'
+        .set 'Authorization', "Basic #{@userAuth}"
+        .reply 201
+      )
+
+      @subscriptionRequests.push( @meshblu
+        .post '/v2/devices/inquisitor-uuid/subscriptions/device-1/message.sent'
+        .set 'Authorization', "Basic #{@userAuth}"
+        .reply 201
+      )
+
+      @subscriptionRequests.push( @meshblu
+        .post '/v2/devices/inquisitor-uuid/subscriptions/device-1/broadcast.sent'
+        .set 'Authorization', "Basic #{@userAuth}"
+        .reply 201
+      )
+
+      @subscriptionRequests.push( @meshblu
         .post '/v2/devices/inquisitor-uuid/subscriptions/device-2/configure.received'
         .set 'Authorization', "Basic #{@userAuth}"
         .reply 201
+      )
 
-      @statusDeviceSubscription = @meshblu
+      @subscriptionRequests.push( @meshblu
+        .post '/v2/devices/inquisitor-uuid/subscriptions/device-2/message.received'
+        .set 'Authorization', "Basic #{@userAuth}"
+        .reply 201
+      )
+
+      @subscriptionRequests.push( @meshblu
+        .post '/v2/devices/inquisitor-uuid/subscriptions/device-2/message.sent'
+        .set 'Authorization', "Basic #{@userAuth}"
+        .reply 201
+      )
+
+      @subscriptionRequests.push( @meshblu
+        .post '/v2/devices/inquisitor-uuid/subscriptions/device-2/broadcast.sent'
+        .set 'Authorization', "Basic #{@userAuth}"
+        .reply 201
+      )
+
+      @subscriptionRequests.push( @meshblu
         .post '/v2/devices/inquisitor-uuid/subscriptions/status-device/configure.received'
         .set 'Authorization', "Basic #{@userAuth}"
         .reply 201
+      )
 
-      @subscribeToInquisitor = @meshblu
+      @subscriptionRequests.push( @meshblu
+        .post '/v2/devices/inquisitor-uuid/subscriptions/status-device/message.received'
+        .set 'Authorization', "Basic #{@userAuth}"
+        .reply 201
+      )
+
+      @subscriptionRequests.push( @meshblu
+        .post '/v2/devices/inquisitor-uuid/subscriptions/status-device/message.sent'
+        .set 'Authorization', "Basic #{@userAuth}"
+        .reply 201
+      )
+
+      @subscriptionRequests.push( @meshblu
+        .post '/v2/devices/inquisitor-uuid/subscriptions/status-device/broadcast.sent'
+        .set 'Authorization', "Basic #{@userAuth}"
+        .reply 201
+      )
+
+      @subscriptionRequests.push( @meshblu
         .post '/v2/devices/inquisitor-uuid/subscriptions/inquisitor-uuid/configure.received'
         .set 'Authorization', "Basic #{@userAuth}"
         .reply 201
+      )
+
+      @subscriptionRequests.push( @meshblu
+        .post '/v2/devices/inquisitor-uuid/subscriptions/inquisitor-uuid/message.received'
+        .set 'Authorization', "Basic #{@userAuth}"
+        .reply 201
+      )
+
+      @subscriptionRequests.push( @meshblu
+        .post '/v2/devices/inquisitor-uuid/subscriptions/inquisitor-uuid/message.sent'
+        .set 'Authorization', "Basic #{@userAuth}"
+        .reply 201
+      )
+
+      @subscriptionRequests.push( @meshblu
+        .post '/v2/devices/inquisitor-uuid/subscriptions/inquisitor-uuid/broadcast.sent'
+        .set 'Authorization', "Basic #{@userAuth}"
+        .reply 201
+      )
 
     beforeEach 'permissions', ->
       @meshblu
@@ -103,17 +180,8 @@ describe 'Setup', ->
       @sut.setup done
       return null
 
-    it 'should create the configure.received subscription for inquisitor-uuid', ->
-      @subscribeToInquisitor.done()
-
-    it 'should create the configure.received subscription for device-1', ->
-      @device1Subscription.done()
-
-    it 'should create the configure.received subscription for device-2', ->
-      @device2Subscription.done()
-
-    it 'should create the configure.received subscription for the status-device', ->
-      @statusDeviceSubscription.done()
+    it 'should create all them subscriptions', ->
+      _.each @subscriptionRequests, (request) => request.done()
 
     it 'should update the whitelist for device-1', ->
       @updateDevice1.done()

@@ -93,8 +93,13 @@ class Inquisitor extends EventEmitter
     async.each devices, @_createSubscription, callback
 
   _createSubscription: (device, callback) =>
-    subscription = subscriberUuid: @inquisitorUuid, emitterUuid: device, type: 'configure.received'
-    @meshblu.createSubscription subscription, callback
+    subscriptions = [
+      {subscriberUuid: @inquisitorUuid, emitterUuid: device, type: 'configure.received'}
+      {subscriberUuid: @inquisitorUuid, emitterUuid: device, type: 'message.received'}
+      {subscriberUuid: @inquisitorUuid, emitterUuid: device, type: 'message.sent'}
+      {subscriberUuid: @inquisitorUuid, emitterUuid: device, type: 'broadcast.sent'}
+    ]
+    async.eachSeries subscriptions, @meshblu.createSubscription, callback
 
   updatePermissions: (devices, callback) =>
     @meshblu.search {query: {uuid: {$in: devices}, 'meshblu.version': '2.0.0'}, projection: {uuid: true}}, (error, v2Devices) =>
