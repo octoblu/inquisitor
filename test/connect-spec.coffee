@@ -54,18 +54,16 @@ describe 'connect', ->
         .reply 201, uuid: "inquisitor-uuid", token: "inquisitor-token"
 
     beforeEach 'mock getMonitoredDevices, out of laziness', ->
-      @deviceMap = [
-        {
+      @deviceMap =
+        'device-1':
           device: { uuid: 'device-1', statusDevice: 'status-device', otherProperty: false }
           statusDevice: 'status-device'
           errors: ['look-an-error']
-        }
-        {
+        'device-2':
           device: { uuid: 'device-2', errors: ['yet-another-error'] }
           statusDevice: 'device-2'
           errors: ['yet-another-error']
-        }
-      ]
+
       @sut.getMonitoredDevices = sinon.stub().yields null, @deviceMap
 
     beforeEach (done) ->

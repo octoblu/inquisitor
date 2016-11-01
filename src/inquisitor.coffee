@@ -34,9 +34,9 @@ class Inquisitor extends EventEmitter
         @firehose = new MeshbluHose({
           meshbluConfig: {
            hostname: @firehoseConfig.hostname
-           port: @firehoseConfig.port,
+           port: @firehoseConfig.port
            protocol: @firehoseConfig.protocol
-           uuid: @inquisitorUuid,
+           uuid: @inquisitorUuid
            token: response.token
           }
         })
@@ -85,11 +85,17 @@ class Inquisitor extends EventEmitter
         callback null, @mapStatusDevices devices
 
   mapStatusDevices: (devices) =>
-    _.compact _.map devices, (device) =>
+    deviceMap = {}
+    _.each devices, (device) =>
       return if _.some devices, statusDevice: device.uuid
-      return {uuid: device.uuid, device, statusDevice: device.uuid, errors: device.errors} unless device.statusDevice?
+      unless device.statusDevice?
+        deviceMap[device.uuid] = {device, statusDevice: device.uuid, errors: device.errors}
+        return
+
       statusDevice = _.find devices, uuid: device.statusDevice
-      return {uuid: device.uuid, device, statusDevice: device.statusDevice, errors: statusDevice?.errors || []}
+      deviceMap[device.uuid] = {device, statusDevice: device.statusDevice, errors: statusDevice?.errors || []}
+
+    return deviceMap
 
 
   createSubscriptions: (devices, callback) =>
