@@ -159,6 +159,7 @@ class Inquisitor extends EventEmitter
           .value()
 
       async.map subscriptionQueries, @meshblu.listSubscriptions, (error, subscriptions) =>
-        return callback error, _.flatten(subscriptions)
+        return callback null, [] if error?
+        return callback null, _.flatten(subscriptions)
 
 module.exports = Inquisitor
