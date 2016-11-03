@@ -46,33 +46,61 @@ describe 'getMonitoredDeviceSubscriptions', ->
             {subscriberUuid: 'inquisitor-uuid', emitterUuid: 'device-2', type: 'message.received'}
           ]
 
-    beforeEach 'get-subscriptions', ->
-      @meshblu
-        .get '/v2/devices/device-1/subscriptions'
-        .set 'Authorization', "Basic #{@userAuth}"
-        .reply 200, [
+    describe 'when getting all the subscriptions works swimmingly', ->
+      beforeEach 'get-subscriptions', ->
+        @meshblu
+          .get '/v2/devices/device-1/subscriptions'
+          .set 'Authorization', "Basic #{@userAuth}"
+          .reply 200, [
+            {subscriberUuid: 'device-1', emitterUuid: 'device-1', type: 'configure.received'}
+            {subscriberUuid: 'device-1', emitterUuid: 'device-3', type: 'configure.received'}
+          ]
+
+        @meshblu
+          .get '/v2/devices/device-2/subscriptions'
+          .set 'Authorization', "Basic #{@userAuth}"
+          .reply 200, [
+            {subscriberUuid: 'device-2', emitterUuid: 'device-1', type: 'configure.received'}
+            {subscriberUuid: 'device-2', emitterUuid: 'device-2', type: 'configure.received'}
+          ]
+
+
+      beforeEach (done) ->
+        @sut.getMonitoredDeviceSubscriptions (error, @subscriptions) => done()
+        return null
+
+      it 'should return an array of objects containing errors associated with devices', ->
+        expected = [
           {subscriberUuid: 'device-1', emitterUuid: 'device-1', type: 'configure.received'}
           {subscriberUuid: 'device-1', emitterUuid: 'device-3', type: 'configure.received'}
-        ]
-
-      @meshblu
-        .get '/v2/devices/device-2/subscriptions'
-        .set 'Authorization', "Basic #{@userAuth}"
-        .reply 200, [
           {subscriberUuid: 'device-2', emitterUuid: 'device-1', type: 'configure.received'}
           {subscriberUuid: 'device-2', emitterUuid: 'device-2', type: 'configure.received'}
         ]
+        expect(@subscriptions).to.deep.equal expected
+
+    describe 'when getting all the subscriptions, and some have trouble', ->
+      beforeEach 'get-subscriptions', ->
+        @meshblu
+          .get '/v2/devices/device-1/subscriptions'
+          .set 'Authorization', "Basic #{@userAuth}"
+          .reply 200, [
+            {subscriberUuid: 'device-1', emitterUuid: 'device-1', type: 'configure.received'}
+            {subscriberUuid: 'device-1', emitterUuid: 'device-3', type: 'configure.received'}
+          ]
+
+        @meshblu
+          .get '/v2/devices/device-2/subscriptions'
+          .set 'Authorization', "Basic #{@userAuth}"
+          .reply 403
 
 
-    beforeEach (done) ->
-      @sut.getMonitoredDeviceSubscriptions (error, @subscriptions) => done()
-      return null
+      beforeEach (done) ->
+        @sut.getMonitoredDeviceSubscriptions (error, @subscriptions) => done()
+        return null
 
-    it 'should return an array of objects containing errors associated with devices', ->
-      expected = [
-        {subscriberUuid: 'device-1', emitterUuid: 'device-1', type: 'configure.received'}
-        {subscriberUuid: 'device-1', emitterUuid: 'device-3', type: 'configure.received'}
-        {subscriberUuid: 'device-2', emitterUuid: 'device-1', type: 'configure.received'}
-        {subscriberUuid: 'device-2', emitterUuid: 'device-2', type: 'configure.received'}
-      ]
-      expect(@subscriptions).to.deep.equal expected
+      it 'should return an array of objects containing errors associated with devices', ->
+        expected = [
+          {subscriberUuid: 'device-1', emitterUuid: 'device-1', type: 'configure.received'}
+          {subscriberUuid: 'device-1', emitterUuid: 'device-3', type: 'configure.received'}
+        ]
+        expect(@subscriptions).to.deep.equal expected

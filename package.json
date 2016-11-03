@@ -1,6 +1,6 @@
 {
   "name": "meshblu-inquisitor",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "A library to setup an inquisitor device",
   "main": "index.js",
   "directories": {

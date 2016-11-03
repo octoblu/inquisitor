@@ -147,6 +147,12 @@ class Inquisitor extends EventEmitter
         errors: true
     @meshblu.updateDangerously uuid, update, callback
 
+
+  _getSubscriptionsSafely: (request, callback) =>
+    @meshblu.listSubscriptions request, (error, data) =>
+      return callback null, [] if error?
+      return callback null, data
+
   getMonitoredDeviceSubscriptions: (callback) =>
     @meshblu.listSubscriptions {subscriberUuid: @inquisitorUuid}, (error, subscriptions) =>
       return callback error if error?
@@ -158,8 +164,7 @@ class Inquisitor extends EventEmitter
           .compact()
           .value()
 
-      async.map subscriptionQueries, @meshblu.listSubscriptions, (error, subscriptions) =>
-        return callback null, [] if error?
-        return callback null, _.flatten(subscriptions)
+      async.map subscriptionQueries, @_getSubscriptionsSafely, (error, subscriptions) =>
+        return callback error, _.flatten(subscriptions)
 
 module.exports = Inquisitor
