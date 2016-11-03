@@ -19,12 +19,12 @@ class Inquisitor extends EventEmitter
         return callback error if error?
 
         @getStatusDevices devices, (error, statusDevices) =>
-           return callback error if error?
-           allDevices = _.union devices, statusDevices
+          return callback error if error?
+          allDevices = _.union devices, statusDevices
 
-           @createSubscriptions allDevices, (error) =>
-             return callback error if error?
-             @updatePermissions allDevices, callback
+          @createSubscriptions allDevices, (error) =>
+            return callback error if error?
+            @updatePermissions allDevices, callback
 
   connect: (callback) =>
     @getMonitoredDevices (error, @monitoredDevices) =>
@@ -33,11 +33,11 @@ class Inquisitor extends EventEmitter
         return callback error if error?
         @firehose = new MeshbluHose({
           meshbluConfig: {
-           hostname: @firehoseConfig.hostname
-           port: @firehoseConfig.port
-           protocol: @firehoseConfig.protocol
-           uuid: @inquisitorUuid
-           token: response.token
+            hostname: @firehoseConfig.hostname
+            port: @firehoseConfig.port
+            protocol: @firehoseConfig.protocol
+            uuid: @inquisitorUuid
+            token: response.token
           }
         })
 
@@ -111,7 +111,8 @@ class Inquisitor extends EventEmitter
     async.eachSeries subscriptions, @meshblu.createSubscription, callback
 
   updatePermissions: (devices, callback) =>
-    @meshblu.search {query: {uuid: {$in: devices}, 'meshblu.version': '2.0.0'}, projection: {uuid: true}}, (error, v2Devices) =>
+    query = {uuid: {$in: devices}, 'meshblu.version': '2.0.0'}
+    @meshblu.search {query: query, projection: {uuid: true}}, (error, v2Devices) =>
       return callback error if error?
       v2Devices = _.map v2Devices, 'uuid'
       v1Devices = _.difference devices, v2Devices
