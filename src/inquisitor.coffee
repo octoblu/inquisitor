@@ -141,7 +141,7 @@ class Inquisitor extends EventEmitter
       $addToSet:
         configureWhitelist: @inquisitorUuid
         discoverWhitelist: @inquisitorUuid
-    @meshblu.updateDangerously device, update, callback
+    @meshblu.updateDangerously device, update, => callback()
 
   updateV2Devices: (devices, callback) =>
     async.each devices, @_updateV2Device, callback
@@ -152,7 +152,7 @@ class Inquisitor extends EventEmitter
         'meshblu.whitelists.configure.sent': uuid: @inquisitorUuid
         'meshblu.whitelists.discover.view': uuid: @inquisitorUuid
 
-    @meshblu.updateDangerously device, update, callback
+    @meshblu.updateDangerously device, update, => callback()
 
   clearErrors: (uuid, callback) =>
     update =

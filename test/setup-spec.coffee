@@ -174,7 +174,7 @@ describe 'Setup', ->
         .put '/v2/devices/status-device'
         .set 'Authorization', "Basic #{@userAuth}"
         .send $addToSet: { 'meshblu.whitelists.configure.sent': {uuid: 'inquisitor-uuid'}, 'meshblu.whitelists.discover.view': {uuid: 'inquisitor-uuid'} }
-        .reply 204
+        .reply 403
 
     beforeEach 'old-subscriptions', ->
       @meshblu.get '/v2/devices/inquisitor-uuid/subscriptions'
