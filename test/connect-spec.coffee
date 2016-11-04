@@ -100,12 +100,12 @@ describe 'connect', ->
               {
                 from: "device-2"
                 to: "inquisitor-uuid"
-                type: "configure.received"
+                type: "configure.sent"
               }
               {
                 from: "inquisitor-uuid"
                 to: "inquisitor-uuid"
-                type: "configure.received"
+                type: "configure.sent"
               }
             ]
           rawData: JSON.stringify(
@@ -144,12 +144,12 @@ describe 'connect', ->
               {
                 from: "status-device"
                 to: "inquisitor-uuid"
-                type: "configure.received"
+                type: "configure.sent"
               }
               {
                 from: "inquisitor-uuid"
                 to: "inquisitor-uuid"
-                type: "configure.received"
+                type: "configure.sent"
               }
             ]
           rawData: JSON.stringify(

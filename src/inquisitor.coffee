@@ -15,16 +15,17 @@ class Inquisitor extends EventEmitter
 
       devices = device.devices
 
-      @_createSubscription @inquisitorUuid, (error) =>
-        return callback error if error?
-
-        @getStatusDevices devices, (error, statusDevices) =>
+      @deleteSubscriptions (error) =>
+        @_createSubscription @inquisitorUuid, (error) =>
           return callback error if error?
-          allDevices = _.union devices, statusDevices
 
-          @createSubscriptions allDevices, (error) =>
+          @getStatusDevices devices, (error, statusDevices) =>
             return callback error if error?
-            @updatePermissions allDevices, callback
+            allDevices = _.union devices, statusDevices
+
+            @createSubscriptions allDevices, (error) =>
+              return callback error if error?
+              @updatePermissions allDevices, callback
 
   connect: (callback) =>
     @getMonitoredDevices (error, @monitoredDevices) =>
@@ -48,7 +49,7 @@ class Inquisitor extends EventEmitter
 
   _onMessage: ({metadata, data}) =>
     @emit 'message', {metadata, data}
-    return unless _.last(metadata.route).type == 'configure.received'
+    return unless _.last(metadata.route).type == 'configure.sent'
 
     statusDevice  =  _.last(_.initial(metadata.route)).from
     {device}      = _.find(@monitoredDevices, {statusDevice}) || {}
@@ -69,6 +70,18 @@ class Inquisitor extends EventEmitter
   stop: (callback) =>
     return callback() unless @firehose?
     @firehose.close callback
+
+  deleteSubscriptions: (callback) =>
+    @meshblu.listSubscriptions {subscriberUuid: @inquisitorUuid}, (error, subscriptions) =>
+      return callback error if error?
+      subscriptionQueries =
+        _(subscriptions)
+          .uniqBy('emitterUuid')
+          .reject emitterUuid: @inquisitorUuid
+          .map ({emitterUuid}) => {subscriberUuid: @inquisitorUuid, emitterUuid, type: 'message.received'}
+          .compact()
+          .value()
+      async.map subscriptionQueries, @meshblu.deleteSubscription, callback
 
   getStatusDevices: (devices, callback) =>
     @meshblu.search {query: {uuid: $in: devices }, projection: {statusDevice: true }}, (error, newDevices) =>
@@ -103,7 +116,7 @@ class Inquisitor extends EventEmitter
 
   _createSubscription: (device, callback) =>
     subscriptions = [
-      {subscriberUuid: @inquisitorUuid, emitterUuid: device, type: 'configure.received'}
+      {subscriberUuid: @inquisitorUuid, emitterUuid: device, type: 'configure.sent'}
       {subscriberUuid: @inquisitorUuid, emitterUuid: device, type: 'message.received'}
       {subscriberUuid: @inquisitorUuid, emitterUuid: device, type: 'message.sent'}
       {subscriberUuid: @inquisitorUuid, emitterUuid: device, type: 'broadcast.sent'}
@@ -136,7 +149,7 @@ class Inquisitor extends EventEmitter
   _updateV2Device: (device, callback) =>
     update =
       $addToSet:
-        'meshblu.whitelists.configure.received': uuid: @inquisitorUuid
+        'meshblu.whitelists.configure.sent': uuid: @inquisitorUuid
         'meshblu.whitelists.discover.view': uuid: @inquisitorUuid
 
     @meshblu.updateDangerously device, update, callback

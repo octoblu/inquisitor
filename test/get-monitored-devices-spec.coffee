@@ -41,10 +41,10 @@ describe 'getMonitoredDevices', ->
         .get "/v2/devices/inquisitor-uuid/subscriptions"
         .set 'Authorization', "Basic #{@userAuth}"
         .reply 200, [
-            {subscriberUuid: 'inquisitor-uuid', emitterUuid: 'device-1', type: 'configure.received'}
-            {subscriberUuid: 'inquisitor-uuid', emitterUuid: 'inquisitor-uuid', type: 'configure.received'}
-            {subscriberUuid: 'inquisitor-uuid', emitterUuid: 'device-2', type: 'configure.received'}
-            {subscriberUuid: 'inquisitor-uuid', emitterUuid: 'status-device', type: 'configure.received'}
+            {subscriberUuid: 'inquisitor-uuid', emitterUuid: 'device-1', type: 'configure.sent'}
+            {subscriberUuid: 'inquisitor-uuid', emitterUuid: 'inquisitor-uuid', type: 'configure.sent'}
+            {subscriberUuid: 'inquisitor-uuid', emitterUuid: 'device-2', type: 'configure.sent'}
+            {subscriberUuid: 'inquisitor-uuid', emitterUuid: 'status-device', type: 'configure.sent'}
           ]
 
     beforeEach 'search', ->

@@ -55,7 +55,7 @@ describe 'Setup', ->
     beforeEach 'subscriptions', ->
       @subscriptionRequests = []
       @subscriptionRequests.push( @meshblu
-        .post '/v2/devices/inquisitor-uuid/subscriptions/device-1/configure.received'
+        .post '/v2/devices/inquisitor-uuid/subscriptions/device-1/configure.sent'
         .set 'Authorization', "Basic #{@userAuth}"
         .reply 201
       )
@@ -79,7 +79,7 @@ describe 'Setup', ->
       )
 
       @subscriptionRequests.push( @meshblu
-        .post '/v2/devices/inquisitor-uuid/subscriptions/device-2/configure.received'
+        .post '/v2/devices/inquisitor-uuid/subscriptions/device-2/configure.sent'
         .set 'Authorization', "Basic #{@userAuth}"
         .reply 201
       )
@@ -103,7 +103,7 @@ describe 'Setup', ->
       )
 
       @subscriptionRequests.push( @meshblu
-        .post '/v2/devices/inquisitor-uuid/subscriptions/status-device/configure.received'
+        .post '/v2/devices/inquisitor-uuid/subscriptions/status-device/configure.sent'
         .set 'Authorization', "Basic #{@userAuth}"
         .reply 201
       )
@@ -127,7 +127,7 @@ describe 'Setup', ->
       )
 
       @subscriptionRequests.push( @meshblu
-        .post '/v2/devices/inquisitor-uuid/subscriptions/inquisitor-uuid/configure.received'
+        .post '/v2/devices/inquisitor-uuid/subscriptions/inquisitor-uuid/configure.sent'
         .set 'Authorization', "Basic #{@userAuth}"
         .reply 201
       )
@@ -161,7 +161,7 @@ describe 'Setup', ->
       @updateDevice1 = @meshblu
         .put '/v2/devices/device-1'
         .set 'Authorization', "Basic #{@userAuth}"
-        .send $addToSet: { 'meshblu.whitelists.configure.received': {uuid: 'inquisitor-uuid'}, 'meshblu.whitelists.discover.view': {uuid: 'inquisitor-uuid'} }
+        .send $addToSet: { 'meshblu.whitelists.configure.sent': {uuid: 'inquisitor-uuid'}, 'meshblu.whitelists.discover.view': {uuid: 'inquisitor-uuid'} }
         .reply 204
 
       @updateDevice2 = @meshblu
@@ -173,12 +173,30 @@ describe 'Setup', ->
       @updateStatusDevice = @meshblu
         .put '/v2/devices/status-device'
         .set 'Authorization', "Basic #{@userAuth}"
-        .send $addToSet: { 'meshblu.whitelists.configure.received': {uuid: 'inquisitor-uuid'}, 'meshblu.whitelists.discover.view': {uuid: 'inquisitor-uuid'} }
+        .send $addToSet: { 'meshblu.whitelists.configure.sent': {uuid: 'inquisitor-uuid'}, 'meshblu.whitelists.discover.view': {uuid: 'inquisitor-uuid'} }
         .reply 204
+
+    beforeEach 'old-subscriptions', ->
+      @meshblu.get '/v2/devices/inquisitor-uuid/subscriptions'
+        .set 'Authorization', "Basic #{@userAuth}"
+        .reply 200, [
+          subscriberUuid: 'inquisitor-uuid'
+          emitterUuid: 'whoever-uuid'
+          type: 'message.received'
+        ]
+
+      @deleteOldSubscription =
+        @meshblu.delete '/v2/devices/inquisitor-uuid/subscriptions/whoever-uuid/message.received'
+          .set 'Authorization', "Basic #{@userAuth}"
+          .reply 204
+
 
     beforeEach (done) ->
       @sut.setup done
       return null
+
+    it 'should delete the old subscriptions', ->
+      @deleteOldSubscription.done()
 
     it 'should create all them subscriptions', ->
       _.each @subscriptionRequests, (request) => request.done()

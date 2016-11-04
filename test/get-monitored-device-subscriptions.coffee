@@ -41,8 +41,8 @@ describe 'getMonitoredDeviceSubscriptions', ->
         .get "/v2/devices/inquisitor-uuid/subscriptions"
         .set 'Authorization', "Basic #{@userAuth}"
         .reply 200, [
-            {subscriberUuid: 'inquisitor-uuid', emitterUuid: 'device-1', type: 'configure.received'}
-            {subscriberUuid: 'inquisitor-uuid', emitterUuid: 'device-2', type: 'configure.received'}
+            {subscriberUuid: 'inquisitor-uuid', emitterUuid: 'device-1', type: 'configure.sent'}
+            {subscriberUuid: 'inquisitor-uuid', emitterUuid: 'device-2', type: 'configure.sent'}
             {subscriberUuid: 'inquisitor-uuid', emitterUuid: 'device-2', type: 'message.received'}
           ]
 
@@ -52,16 +52,16 @@ describe 'getMonitoredDeviceSubscriptions', ->
           .get '/v2/devices/device-1/subscriptions'
           .set 'Authorization', "Basic #{@userAuth}"
           .reply 200, [
-            {subscriberUuid: 'device-1', emitterUuid: 'device-1', type: 'configure.received'}
-            {subscriberUuid: 'device-1', emitterUuid: 'device-3', type: 'configure.received'}
+            {subscriberUuid: 'device-1', emitterUuid: 'device-1', type: 'configure.sent'}
+            {subscriberUuid: 'device-1', emitterUuid: 'device-3', type: 'configure.sent'}
           ]
 
         @meshblu
           .get '/v2/devices/device-2/subscriptions'
           .set 'Authorization', "Basic #{@userAuth}"
           .reply 200, [
-            {subscriberUuid: 'device-2', emitterUuid: 'device-1', type: 'configure.received'}
-            {subscriberUuid: 'device-2', emitterUuid: 'device-2', type: 'configure.received'}
+            {subscriberUuid: 'device-2', emitterUuid: 'device-1', type: 'configure.sent'}
+            {subscriberUuid: 'device-2', emitterUuid: 'device-2', type: 'configure.sent'}
           ]
 
 
@@ -71,10 +71,10 @@ describe 'getMonitoredDeviceSubscriptions', ->
 
       it 'should return an array of objects containing errors associated with devices', ->
         expected = [
-          {subscriberUuid: 'device-1', emitterUuid: 'device-1', type: 'configure.received'}
-          {subscriberUuid: 'device-1', emitterUuid: 'device-3', type: 'configure.received'}
-          {subscriberUuid: 'device-2', emitterUuid: 'device-1', type: 'configure.received'}
-          {subscriberUuid: 'device-2', emitterUuid: 'device-2', type: 'configure.received'}
+          {subscriberUuid: 'device-1', emitterUuid: 'device-1', type: 'configure.sent'}
+          {subscriberUuid: 'device-1', emitterUuid: 'device-3', type: 'configure.sent'}
+          {subscriberUuid: 'device-2', emitterUuid: 'device-1', type: 'configure.sent'}
+          {subscriberUuid: 'device-2', emitterUuid: 'device-2', type: 'configure.sent'}
         ]
         expect(@subscriptions).to.deep.equal expected
 
@@ -84,8 +84,8 @@ describe 'getMonitoredDeviceSubscriptions', ->
           .get '/v2/devices/device-1/subscriptions'
           .set 'Authorization', "Basic #{@userAuth}"
           .reply 200, [
-            {subscriberUuid: 'device-1', emitterUuid: 'device-1', type: 'configure.received'}
-            {subscriberUuid: 'device-1', emitterUuid: 'device-3', type: 'configure.received'}
+            {subscriberUuid: 'device-1', emitterUuid: 'device-1', type: 'configure.sent'}
+            {subscriberUuid: 'device-1', emitterUuid: 'device-3', type: 'configure.sent'}
           ]
 
         @meshblu
@@ -100,7 +100,7 @@ describe 'getMonitoredDeviceSubscriptions', ->
 
       it 'should return an array of objects containing errors associated with devices', ->
         expected = [
-          {subscriberUuid: 'device-1', emitterUuid: 'device-1', type: 'configure.received'}
-          {subscriberUuid: 'device-1', emitterUuid: 'device-3', type: 'configure.received'}
+          {subscriberUuid: 'device-1', emitterUuid: 'device-1', type: 'configure.sent'}
+          {subscriberUuid: 'device-1', emitterUuid: 'device-3', type: 'configure.sent'}
         ]
         expect(@subscriptions).to.deep.equal expected
