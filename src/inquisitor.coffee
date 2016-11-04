@@ -78,7 +78,7 @@ class Inquisitor extends EventEmitter
         _(subscriptions)
           .uniqBy('emitterUuid')
           .reject emitterUuid: @inquisitorUuid
-          .map ({emitterUuid}) => {subscriberUuid: @inquisitorUuid, emitterUuid, type: 'message.received'}
+          .map ({emitterUuid, type}) => {subscriberUuid: @inquisitorUuid, emitterUuid, type}
           .compact()
           .value()
       async.map subscriptionQueries, @meshblu.deleteSubscription, callback
