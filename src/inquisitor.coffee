@@ -177,7 +177,7 @@ class Inquisitor extends EventEmitter
           .compact()
           .value()
 
-      async.map subscriptionQueries, @_getSubscriptionsSafely, (error, subscriptions) =>
+      async.mapSeries subscriptionQueries, @_getSubscriptionsSafely, (error, subscriptions) =>
         return callback error, _.flatten(subscriptions)
 
 module.exports = Inquisitor
