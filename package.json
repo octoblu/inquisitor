@@ -1,6 +1,6 @@
 {
   "name": "meshblu-inquisitor",
-  "version": "4.0.6",
+  "version": "4.0.7",
   "description": "A library to setup an inquisitor device",
   "main": "index.js",
   "directories": {
@@ -63,6 +63,6 @@
     "eventemitter2": "^2.1.3",
     "lodash": "^4.16.4",
     "meshblu-config": "^6.0.0",
-    "meshblu-firehose-socket.io": "^1.7.1"
+    "meshblu-firehose-socket.io": "^2.0.9"
   }
 }

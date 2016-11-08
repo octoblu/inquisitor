@@ -1,7 +1,7 @@
 _           = require 'lodash'
 async       = require 'async'
 MeshbluHttp = require 'browser-meshblu-http'
-MeshbluHose = require 'meshblu-firehose-socket.io/src/firehose-socket-io.coffee'
+MeshbluHose = require 'meshblu-firehose-socket.io'
 EventEmitter = require 'eventemitter2'
 
 class Inquisitor extends EventEmitter
@@ -45,7 +45,7 @@ class Inquisitor extends EventEmitter
         @firehose.on 'message', @_onMessage
 
 
-        @firehose.connect {uuid: @inquisitorUuid}, callback
+        @firehose.connect callback
 
   _onMessage: ({metadata, data}) =>
     @emit 'message', {metadata, data}
