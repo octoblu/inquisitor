@@ -16,7 +16,7 @@ class Inquisitor extends EventEmitter
       devices = device.devices
 
       @deleteSubscriptions (error) =>
-        @_createSubscription @inquisitorUuid, (error) =>
+        @_setupInquisitorSubscriptions (error) =>
           return callback error if error?
 
           @getStatusDevices devices, (error, statusDevices) =>
@@ -26,6 +26,15 @@ class Inquisitor extends EventEmitter
             @createSubscriptions allDevices, (error) =>
               return callback error if error?
               @updatePermissions allDevices, callback
+
+
+  _setupInquisitorSubscriptions: (callback) =>
+    subscriptions = [
+      {subscriberUuid: @inquisitorUuid, emitterUuid: @inquisitorUuid, type: 'broadcast.received'}
+      {subscriberUuid: @inquisitorUuid, emitterUuid: @inquisitorUuid, type: 'message.received'}
+      {subscriberUuid: @inquisitorUuid, emitterUuid: @inquisitorUuid, type: 'configure.received'}
+    ]
+    async.eachSeries subscriptions, @meshblu.createSubscription, callback
 
   connect: (callback) =>
     @getMonitoredDevices (error, @monitoredDevices) =>
@@ -74,14 +83,7 @@ class Inquisitor extends EventEmitter
   deleteSubscriptions: (callback) =>
     @meshblu.listSubscriptions {subscriberUuid: @inquisitorUuid}, (error, subscriptions) =>
       return callback error if error?
-      subscriptionQueries =
-        _(subscriptions)
-          .uniqBy('emitterUuid')
-          .reject emitterUuid: @inquisitorUuid
-          .map ({emitterUuid, type}) => {subscriberUuid: @inquisitorUuid, emitterUuid, type}
-          .compact()
-          .value()
-      async.map subscriptionQueries, @meshblu.deleteSubscription, callback
+      async.map subscriptions, @meshblu.deleteSubscription, callback
 
   getStatusDevices: (devices, callback) =>
     @meshblu.search {query: {uuid: $in: devices }, projection: {statusDevice: true }}, (error, newDevices) =>
@@ -117,9 +119,11 @@ class Inquisitor extends EventEmitter
   _createSubscription: (device, callback) =>
     subscriptions = [
       {subscriberUuid: @inquisitorUuid, emitterUuid: device, type: 'configure.sent'}
-      {subscriberUuid: @inquisitorUuid, emitterUuid: device, type: 'message.received'}
+      {subscriberUuid: @inquisitorUuid, emitterUuid: device, type: 'configure.received'}
       {subscriberUuid: @inquisitorUuid, emitterUuid: device, type: 'message.sent'}
+      {subscriberUuid: @inquisitorUuid, emitterUuid: device, type: 'message.received'}
       {subscriberUuid: @inquisitorUuid, emitterUuid: device, type: 'broadcast.sent'}
+      {subscriberUuid: @inquisitorUuid, emitterUuid: device, type: 'broadcast.received'}
     ]
     async.eachSeries subscriptions, @meshblu.createSubscription, callback
 

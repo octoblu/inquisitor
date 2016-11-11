@@ -180,23 +180,51 @@ describe 'Setup', ->
       @meshblu.get '/v2/devices/inquisitor-uuid/subscriptions'
         .set 'Authorization', "Basic #{@userAuth}"
         .reply 200, [
-          subscriberUuid: 'inquisitor-uuid'
-          emitterUuid: 'whoever-uuid'
-          type: 'message.received'
+          {
+            subscriberUuid: 'inquisitor-uuid'
+            emitterUuid: 'whoever-uuid'
+            type: 'message.received'
+          }
+          {
+            subscriberUuid: 'inquisitor-uuid'
+            emitterUuid: 'whoever-uuid'
+            type: 'message.sent'
+          }
+          {
+            subscriberUuid: 'inquisitor-uuid'
+            emitterUuid: 'whooomeever-uuid'
+            type: 'configure.sent'
+          }          
         ]
 
-      @deleteOldSubscription =
+
+      @deleteMessageReceivedSubscription =
         @meshblu.delete '/v2/devices/inquisitor-uuid/subscriptions/whoever-uuid/message.received'
           .set 'Authorization', "Basic #{@userAuth}"
           .reply 204
 
+      @deleteMessageSentSubscription =
+        @meshblu.delete '/v2/devices/inquisitor-uuid/subscriptions/whoever-uuid/message.sent'
+          .set 'Authorization', "Basic #{@userAuth}"
+          .reply 204
+
+      @deleteConfigureSentSubscription =
+        @meshblu.delete '/v2/devices/inquisitor-uuid/subscriptions/whooomeever-uuid/configure.sent'
+          .set 'Authorization', "Basic #{@userAuth}"
+          .reply 204
 
     beforeEach (done) ->
       @sut.setup done
       return null
 
-    it 'should delete the old subscriptions', ->
-      @deleteOldSubscription.done()
+    it 'should delete the old message.received subscription', ->
+      @deleteMessageReceivedSubscription.done()
+
+    it 'should delete the old message.sent subscription', ->
+      @deleteMessageSentSubscription.done()
+
+    it 'should delete the old configure.sent subscription', ->
+      @deleteConfigureSentSubscription.done()
 
     it 'should create all them subscriptions', ->
       _.each @subscriptionRequests, (request) => request.done()
