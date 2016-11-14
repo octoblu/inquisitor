@@ -55,6 +55,12 @@ describe 'Setup', ->
     beforeEach 'subscriptions', ->
       @subscriptionRequests = []
       @subscriptionRequests.push( @meshblu
+        .post '/v2/devices/inquisitor-uuid/subscriptions/device-1/configure.received'
+        .set 'Authorization', "Basic #{@userAuth}"
+        .reply 201
+      )
+
+      @subscriptionRequests.push( @meshblu
         .post '/v2/devices/inquisitor-uuid/subscriptions/device-1/configure.sent'
         .set 'Authorization', "Basic #{@userAuth}"
         .reply 201
@@ -73,7 +79,19 @@ describe 'Setup', ->
       )
 
       @subscriptionRequests.push( @meshblu
+        .post '/v2/devices/inquisitor-uuid/subscriptions/device-1/broadcast.received'
+        .set 'Authorization', "Basic #{@userAuth}"
+        .reply 201
+      )
+
+      @subscriptionRequests.push( @meshblu
         .post '/v2/devices/inquisitor-uuid/subscriptions/device-1/broadcast.sent'
+        .set 'Authorization', "Basic #{@userAuth}"
+        .reply 201
+      )
+
+      @subscriptionRequests.push( @meshblu
+        .post '/v2/devices/inquisitor-uuid/subscriptions/device-2/configure.received'
         .set 'Authorization', "Basic #{@userAuth}"
         .reply 201
       )
@@ -97,7 +115,19 @@ describe 'Setup', ->
       )
 
       @subscriptionRequests.push( @meshblu
+        .post '/v2/devices/inquisitor-uuid/subscriptions/device-2/broadcast.received'
+        .set 'Authorization', "Basic #{@userAuth}"
+        .reply 201
+      )
+
+      @subscriptionRequests.push( @meshblu
         .post '/v2/devices/inquisitor-uuid/subscriptions/device-2/broadcast.sent'
+        .set 'Authorization', "Basic #{@userAuth}"
+        .reply 201
+      )
+
+      @subscriptionRequests.push( @meshblu
+        .post '/v2/devices/inquisitor-uuid/subscriptions/status-device/configure.received'
         .set 'Authorization', "Basic #{@userAuth}"
         .reply 201
       )
@@ -121,13 +151,19 @@ describe 'Setup', ->
       )
 
       @subscriptionRequests.push( @meshblu
+        .post '/v2/devices/inquisitor-uuid/subscriptions/status-device/broadcast.received'
+        .set 'Authorization', "Basic #{@userAuth}"
+        .reply 201
+      )
+
+      @subscriptionRequests.push( @meshblu
         .post '/v2/devices/inquisitor-uuid/subscriptions/status-device/broadcast.sent'
         .set 'Authorization', "Basic #{@userAuth}"
         .reply 201
       )
 
       @subscriptionRequests.push( @meshblu
-        .post '/v2/devices/inquisitor-uuid/subscriptions/inquisitor-uuid/configure.sent'
+        .post '/v2/devices/inquisitor-uuid/subscriptions/inquisitor-uuid/configure.received'
         .set 'Authorization', "Basic #{@userAuth}"
         .reply 201
       )
@@ -139,13 +175,7 @@ describe 'Setup', ->
       )
 
       @subscriptionRequests.push( @meshblu
-        .post '/v2/devices/inquisitor-uuid/subscriptions/inquisitor-uuid/message.sent'
-        .set 'Authorization', "Basic #{@userAuth}"
-        .reply 201
-      )
-
-      @subscriptionRequests.push( @meshblu
-        .post '/v2/devices/inquisitor-uuid/subscriptions/inquisitor-uuid/broadcast.sent'
+        .post '/v2/devices/inquisitor-uuid/subscriptions/inquisitor-uuid/broadcast.received'
         .set 'Authorization', "Basic #{@userAuth}"
         .reply 201
       )
@@ -194,7 +224,7 @@ describe 'Setup', ->
             subscriberUuid: 'inquisitor-uuid'
             emitterUuid: 'whooomeever-uuid'
             type: 'configure.sent'
-          }          
+          }
         ]
 
 
