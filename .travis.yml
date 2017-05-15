@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-- '5'
+- '7'
 addons:
   apt:
     sources:
@@ -22,11 +22,11 @@ before_deploy:
 - npm run-script bundle
 - mkdir -p deploy/inquisitor/$TRAVIS_TAG
 - cp deploy/inquisitor/latest/inquisitor.bundle.js deploy/inquisitor/$TRAVIS_TAG/inquisitor.bundle.js
-
 deploy:
   provider: npm
   email: serveradmin@octoblu.com
   api_key:
-    secure: e7wzL/vWPtjomxxLoJbFefMDA6xAvZ8bMCzzHltj+qJIi1+yqP7Q1aql50AoU8Dg9Dz39jrSoMlC9hoEyHZbiEhxbiJgApQt4k4i/tvpnh4qFmyTHm3en01GFr6Rlz/hHbtOdrUgETanyQj14Zyu8KNSJfI1QmbQLp5vVZRY/cVg4XbWfCfDCepko73TKQhISNlBBcEka1H+2zpJ9+VGOxZB8nJS2mhbTmD6WQjfTuZlHcmYhY/LUAA837ndUYQnSkR0xsw7WwWfvzCqkCWgPhNQj9iEf9iGLgtEaP7O2OHxjmelzCGD6cAi/ApGGLny2EHT+/TWIlRxjajy50X1t8UsWM+ufg3tmhlbwlgSlyFuXuNt3o7ARgiq4cxdB14XeX4fCGZMzfejIYbFMquFewJC0dV6ULxyZ/bfD4dyeJS4ZOiOADx1FeN5Ledc7dSoCj/7CZNbL/IgPB4+vjzOmE/3LRnhak5oBzlgiAog6+1xa3rpS7dM4ovDaaK7+EcI9NvfH4/YU9xzwtEiX69Hpun2XCPaJQAOheGRu7NrPzxcr82NUBp795XciOEuP15VAkCSvrNZEwQrDzUUraBxPl3DNEnfZwT2VHjP+TADJh8CeByC2EzX1JU4A7Jl4nhzxyzDAD6YcvOESNYav9G+Tv1bPbwTpRcBks5Y1I7QzFU=
+    secure: PwYDKmVd0LktxmWlc6tVBBeYezuseY2ojG7I9KMs78j2HmMdvFb9cwCdjiz3ShYjht67z/1X5XElv4C5lb59jUmVBC/4Zo38pig23up/pr5K3FRXCUFoVcuyx2c+ajWgCo3wl5+5M1jmNUuyW1gqzdUrX1gGica6ls/pBq4QAWZuzkuC12P6kS6/800lYNqXLK7VFuw8sOm1pQCh6emXVSbR2lWwnKV9oh8Uyvbaen2fvC0ChVLxES/q925YVZgmXnlwlGyd+856eDV0b9xhJCETPrLNd88v7l4p+9WACZADjvQhKam2XqYH62x5gw8tXdPYDIkxB3EM6fxpSEpV8fIMOMqmu/gsdzMTwjjgIDI3ue6a0i4MSsjd7rS8b6QbMxYd4sClvoFs+ZwavDHeInexPhCeSk4giqxPZF3FX794+sXcXSkqjxf95G2fRsjtPVTg1KSBrKsH+CjJHhVeJwWl9kEOJBI2BjTRFJGyD6ox9fVKWbr7uGcJMaDIDdc05YfDGl4ANpSl1v76R/SLAnRwM07N5Hw2jopJfBqKQqvr3LrSOM2Mgl4Q/bgTOkFj/AeXoyYiiIX4t3F6n4MvaMN5LVS64p2SstOVa7nhrFsg7BoLNszs0KslRfFEZ34zP4FCTrLlIE0aA5Ej8kfpq8ISuGu8ydUR1VQXbHZGfQE=
   on:
-    tags: true    
+    tags: true
+    repo: octoblu/meshblu-inquisitor
