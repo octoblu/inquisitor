@@ -16,6 +16,8 @@ class Inquisitor extends EventEmitter
       devices = device.devices
 
       @deleteSubscriptions (error) =>
+        return callback error if error?
+
         @_setupInquisitorSubscriptions (error) =>
           return callback error if error?
 
@@ -94,7 +96,8 @@ class Inquisitor extends EventEmitter
   getMonitoredDevices: (callback) =>
     @meshblu.listSubscriptions {subscriberUuid: @inquisitorUuid}, (error, subscriptions) =>
       return callback error if error?
-      subscribedDevices = _.without _.map(subscriptions, 'emitterUuid'), @inquisitorUuid
+
+      subscribedDevices = _.without _.uniq(_.map(subscriptions, 'emitterUuid')), @inquisitorUuid
       @meshblu.search {query: {uuid: $in: subscribedDevices}}, (error, devices) =>
         return callback error if error?
         callback null, @mapStatusDevices devices
